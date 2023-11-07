@@ -4,8 +4,8 @@
 
 open DatabaseUtils
 
-connectToDatabase "Host=localhost;Database=express-test"
-|> executeQuery "SELECT * FROM employees"
+connectToDatabase "Host=localhost;Database=post_v_course"
+|> executeQuery "SELECT title FROM document_titles LIMIT 10"
 |> readResults
 |> convertToJson
 |> printfn "%s"
