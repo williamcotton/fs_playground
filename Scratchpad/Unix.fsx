@@ -1,6 +1,11 @@
+#r "nuget: SixLabors.ImageSharp"
+
 open System
 open System.Diagnostics
+open System.IO
 open System.Threading.Tasks
+open SixLabors.ImageSharp
+open SixLabors.ImageSharp.Formats.Png
 
 type CommandResult =
   { ExitCode: int
@@ -39,7 +44,7 @@ let executeCommand executable args =
   }
 
 let executeShellCommand command =
-    executeCommand "/usr/bin/env" [ "-S"; "zsh"; "-c"; command ]
+    executeCommand "/usr/bin/env" [ "-S"; "zsh"; "-c"; "source ~/.zshrc; " + command ]
 
 let executeUnixCommand command input =
     let fullCommand = sprintf "echo \"%s\" | %s" input command
@@ -47,22 +52,31 @@ let executeUnixCommand command input =
 
 let p command input = 
   match input with
-  | Some i -> 
+  | Ok i -> 
       let result = executeUnixCommand command i
-      if result.ExitCode = 0 then Some result.StandardOutput else None
-  | None -> None
+      if result.ExitCode = 0 then Ok result.StandardOutput else Error result.StandardError
+  | Error e -> Error e
 
-let echo =
-  Option.iter (printfn "%s")
+let echo = function
+  | Ok i -> printfn "%s" i
+  | Error e -> printfn "%s" e
 
-let runPipeline =
-  Some "
+let runPipelineAwk =
+  Ok "
     pattern
     runner
     fatter
   "
   |> p "grep tt"
-  |> p "awk '{print $1 $1 $1}'"
+  |> p "nawk '{print $1 $1 $1}'"
   |> echo
 
-runPipeline
+runPipelineAwk
+
+
+let runPipelinePlt =
+  Ok "one,two,date\n1,2,2021-01\n3,4,2021-02"
+  |> p "plt 'one, date { plot 1px dashed red }' | imgcat"
+  |> echo
+
+runPipelinePlt
