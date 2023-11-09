@@ -46,7 +46,7 @@ let executeCommand executable args =
   }
 
 let executeShellCommand command =
-    executeCommand "/usr/bin/env" [ "-S"; "zsh"; "-c"; "source ~/dotfiles/.zshexec; " + command ]
+    executeCommand "/usr/bin/env" [ "-S"; "zsh"; "-c"; "source ~/.zshexec; " + command ]
 
 let executeUnixCommand command input =
     let fullCommand = sprintf "echo \"%s\" | %s" input command
