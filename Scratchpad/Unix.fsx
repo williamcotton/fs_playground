@@ -1,3 +1,5 @@
+#!/usr/bin/env dotnet fsi
+
 #r "nuget: SixLabors.ImageSharp"
 
 open System
@@ -44,13 +46,13 @@ let executeCommand executable args =
   }
 
 let executeShellCommand command =
-    executeCommand "/usr/bin/env" [ "-S"; "zsh"; "-c"; "source ~/.zshrc; " + command ]
+    executeCommand "/usr/bin/env" [ "-S"; "zsh"; "-c"; "source ~/dotfiles/.zshexec; " + command ]
 
 let executeUnixCommand command input =
     let fullCommand = sprintf "echo \"%s\" | %s" input command
     executeShellCommand fullCommand |> Async.RunSynchronously
 
-let p command input = 
+let zsh command input = 
   match input with
   | Ok i -> 
       let result = executeUnixCommand command i
@@ -61,25 +63,14 @@ let echo = function
   | Ok i -> printfn "%s" i
   | Error e -> printfn "%s" e
 
-let runPipelineAwk =
-  Ok "
-    pattern
-    runner
-    fatter
-  "
-  |> p "grep tt"
-  |> p "nawk '{print $1 $1 $1}'"
-  |> echo
+let commandFunc commandName pattern (input : Result<string, string>) =
+  match input with
+  | Ok i -> 
+      let fullCommand = commandName + " " + pattern
+      let result = executeUnixCommand fullCommand i
+      if result.ExitCode = 0 then Ok result.StandardOutput else Error result.StandardError
+  | Error e -> Error e
 
-runPipelineAwk
-
-
-let runPipelinePlt =
-  Ok "one,two,three,date
-      1,2,3,2021-01
-      4,5,6,2021-02
-      7,8,9,2021-03"
-  |> p "plt '[one, two, three], date { bar 10px [solid red, solid green, solid blue] }' | imgcat"
-  |> echo
-
-runPipelinePlt
+let grep = commandFunc "grep"
+let awk = commandFunc "awk"
+  
