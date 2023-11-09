@@ -75,8 +75,11 @@ runPipelineAwk
 
 
 let runPipelinePlt =
-  Ok "one,two,date\n1,2,2021-01\n3,4,2021-02"
-  |> p "plt 'one, date { plot 1px dashed red }' | imgcat"
+  Ok "one,two,three,date
+      1,2,3,2021-01
+      4,5,6,2021-02
+      7,8,9,2021-03"
+  |> p "plt '[one, two, three], date { bar 10px [solid red, solid green, solid blue] }' | imgcat"
   |> echo
 
 runPipelinePlt
