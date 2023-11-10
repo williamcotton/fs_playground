@@ -1,9 +1,12 @@
 // Type Constructor
 // In category theory, this is known as an endofunctor. It's a functor within a single category.
 // In this case, the category is the category of types in TypeScript, and Result<T> is a functor that maps a type T to a new type Result<T>.
+type Success<T> = { kind: "success", value: T };
+type Err = { kind: "error", error: string };
+
 type Result<T> = 
-  | { kind: "success", value: T }
-  | { kind: "error", error: string }
+  | Success<T>
+  | Err;
 
 // Unit Function
 // In category theory, this is part of the definition of a monad. It's also known as the 'return' operation in monadic context.
