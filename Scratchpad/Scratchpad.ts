@@ -12,18 +12,18 @@ const nthElement = (n: number, list: any[]) =>
   list.length > n ? list[n] : null
 
 const replaceOrderLine = (orderLineId: number) => (newOrderLine: OrderLine) => (orderLines: OrderLine[]) =>
-    orderLines.map((ol) => (ol.id === orderLineId ? newOrderLine : ol))
+  orderLines.map((ol) => (ol.id === orderLineId ? newOrderLine : ol))
 
 const findOrderLine = (orderLineId: number) => (order: Order) => 
   order.orderLines.find((ol) => ol.id === orderLineId)
 
 const changeOrderLinePrice = (order: Order) => (orderLineId: number) => (newPrice: number): Order => {
-    let orderLine = findOrderLine(orderLineId)(order)
-    let newOrderLine = { ...orderLine, price: newPrice } as OrderLine
-    let newOrderLines = replaceOrderLine(orderLineId)(newOrderLine)(order.orderLines)
-    let newOrder = { ...order, orderLines: newOrderLines }
-    return newOrder
-  };
+  let orderLine = findOrderLine(orderLineId)(order)
+  let newOrderLine = { ...orderLine, price: newPrice } as OrderLine
+  let newOrderLines = replaceOrderLine(orderLineId)(newOrderLine)(order.orderLines)
+  let newOrder = { ...order, orderLines: newOrderLines }
+  return newOrder
+};
 
 const order: Order = {
   id: 1,

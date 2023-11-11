@@ -1,5 +1,3 @@
-#!/usr/bin/env dotnet fsi
-
 type OrderLine = { 
     Id: int; 
     Price: decimal 
@@ -11,7 +9,8 @@ type Order = {
 }
 
 let nthElement n list = 
-    try Some(List.item n list) with _ -> None
+    try Some(List.item n list)
+    with _ -> None
 
 let findOrderLine orderLineId (orderLines: list<OrderLine>) =
     orderLines |> List.find (fun ol -> ol.Id = orderLineId)
@@ -25,7 +24,6 @@ let changeOrderLinePrice order orderLineId newPrice =
     let newOrderLines = order.OrderLines |> replaceOrderLine orderLineId newOrderLine
     let newOrder = { order with OrderLines = newOrderLines }
     newOrder
-
 
 let order =
     { Id = 1

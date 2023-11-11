@@ -10,21 +10,29 @@ class Order:
         self.id = id
         self.order_lines = order_lines
 
-nth_element: Callable[[int, List[Any]], Optional[Any]] = (
-    lambda n, list: list[n] if n < len(list) else None )
+NthElement = Callable[[int], Callable[[List[Any]], Optional[Any]]]
 
-find_order_line: Callable[[int], Callable[[List[OrderLine]], Optional[OrderLine]]] = lambda order_line_id: lambda order_lines: next(
-    (ol for ol in order_lines if ol.id == order_line_id), None )
+FindOrderLine = Callable[[int], Callable[[List[OrderLine]], Optional[OrderLine]]]
 
-replace_order_line: Callable[[int, OrderLine], Callable[[List[OrderLine]], List[OrderLine]]] = lambda order_line_id, new_order_line: lambda order_lines: [
-    new_order_line if ol.id == order_line_id else ol for ol in order_lines ]
+ReplaceOrderLine = Callable[[int, OrderLine], Callable[[List[OrderLine]], List[OrderLine]]]
 
-change_order_line_price: Callable[[Order], Callable[[int], Callable[[float], Order]]] = lambda order: lambda order_line_id: lambda new_price: Order(
-    order.id,
-    replace_order_line(order_line_id, OrderLine(order_line_id, new_price))(
-        order.order_lines
-    ),
-)
+ChangeOrderLinePrice = Callable[[Order], Callable[[int], Callable[[float], Order]]]
+
+nth_element: NthElement = lambda n: lambda list: (
+    list[n] if n < len(list) else None)
+
+find_order_line: FindOrderLine = lambda order_line_id: lambda order_lines: (
+    next((ol for ol in order_lines if ol.id == order_line_id), None ))
+
+replace_order_line: ReplaceOrderLine = lambda order_line_id, new_order_line: lambda order_lines: (
+    [new_order_line if ol.id == order_line_id else ol for ol in order_lines ])
+
+change_order_line_price: ChangeOrderLinePrice = lambda order: lambda order_line_id: lambda new_price: (
+    Order(
+        order.id,
+        replace_order_line(order_line_id, OrderLine(order_line_id, new_price))(
+            order.order_lines
+    )))
 
 order = Order(
     1,
@@ -32,7 +40,7 @@ order = Order(
 
 updated_order = change_order_line_price(order)(1)(15.0)
 
-order_line = nth_element(0, updated_order.order_lines)
+order_line = nth_element(0)(updated_order.order_lines)
 print(
     order_line.price
     if order_line
