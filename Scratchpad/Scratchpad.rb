@@ -1,25 +1,42 @@
-OrderLine = Struct.new(:id, :price)
-Order = Struct.new(:id, :order_lines)
+require 'dry-struct'
+require 'dry-types'
 
-change_order_line_price = -> (order) {
-  -> (order_line_id) {
-    -> (new_price) {
-      new_order_lines = order&.order_lines&.map do |ol|
-        if ol.id == order_line_id
-          OrderLine.new(ol.id, new_price)
-        else
-          ol
-        end
-      end
-      Order.new(order&.id, new_order_lines)
-    }
-  }
-}
+module Types
+  include Dry.Types()
+end
 
-order1 = Order.new('1', [OrderLine.new('1', 10), OrderLine.new('2', 20)])
-new_order1 = change_order_line_price.call(order1).call('1').call(30)
+class OrderLine < Dry::Struct
+  attribute :id, Types::Integer
+  attribute :price, Types::Float
+end
 
-order2 = Order.new('2', [OrderLine.new('1', 10), OrderLine.new('2', 20)])
-new_order2 = change_order_line_price.call(order1).call('2').call(10)
+class Order < Dry::Struct
+  attribute :id, Types::Integer
+  attribute :order_lines, Types::Array.of(OrderLine)
+end
 
-puts new_order1.order_lines.find { |ol| ol.id == '2' }&.price
+nth_element = -> (n, list) {
+  list[n] rescue nil }
+
+find_order_line = -> (order_line_id) { -> (order_lines) { 
+  order_lines.find { |ol| ol.id == order_line_id } } }
+
+replace_order_line = -> (order_line_id) { -> (new_order_line) { -> (order_lines) {
+  order_lines.map { |ol| ol.id == order_line_id ? new_order_line : ol } } } }
+
+change_order_line_price = -> (order) { -> (order_line_id) { -> (new_price) {
+      order_line = find_order_line.call(order_line_id).call(order.order_lines)
+      new_order_line = OrderLine.new(id: order_line&.id, price: new_price)
+      new_order_lines = replace_order_line.call(order_line_id).call(new_order_line).call(order.order_lines)
+      Order.new(id: order.id, order_lines: new_order_lines) } } }
+
+order = Order.new(
+  id: 1, 
+  order_lines: [OrderLine.new(id: 1, price: 10.0), OrderLine.new(id: 2, price: 20.0)])
+
+updated_order = change_order_line_price.call(order).call(1).call(15.0)
+
+order_line = nth_element.call(0, updated_order.order_lines)
+puts order_line ? 
+  order_line.price : 
+  "The list does not have an element at that index"
