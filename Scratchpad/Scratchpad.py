@@ -1,19 +1,15 @@
 from typing import List, Callable, Optional, Any
 
-
 class OrderLine:
     def __init__(self, id: int, price: float):
         self.id = id
         self.price = price
-
 
 class Order:
     def __init__(self, id: int, order_lines: List[OrderLine]):
         self.id = id
         self.order_lines = order_lines
 
-
-# nth_element function
 nth_element: Callable[[int, List[Any]], Optional[Any]] = (
     lambda n, list: list[n] if n < len(list) else None )
 
@@ -30,7 +26,10 @@ change_order_line_price: Callable[[Order], Callable[[int], Callable[[float], Ord
     ),
 )
 
-order = Order(1, [OrderLine(1, 10.0), OrderLine(2, 20.0)])
+order = Order(
+    1,
+    [OrderLine(1, 10.0), OrderLine(2, 20.0)])
+
 updated_order = change_order_line_price(order)(1)(15.0)
 
 order_line = nth_element(0, updated_order.order_lines)
