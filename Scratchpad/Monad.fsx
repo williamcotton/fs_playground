@@ -31,6 +31,14 @@ let join res =
   | Success (Error e) -> Error e
   | Error e -> Error e
 
+// Map Function
+// This is a function that takes a function from the underlying type to another type, and applies it to the value inside the context.
+// In this case, it takes a function from 'T to 'U, and a Result<'T>, and returns a Result<'U>.
+let map f res = 
+  match res with
+  | Success x -> Success (f x)
+  | Error e -> Error e
+
 // A function that might fail, returning a Result.
 // This is an example of a function that you might use with the bind function to chain together computations that might fail.
 let safeDivide y x = 
@@ -61,3 +69,11 @@ let flattenedResult = join nestedResult
 match flattenedResult with
 | Success x -> printfn "Flattened Result: %f" x
 | Error e -> printfn "Error: %s" e
+
+// An example of using the map function.
+// Here, we have a function that takes a value and returns a Result, and we use map to apply it to a Result.
+let safeDivideByTwo = safeDivide 2.0
+let mappedResult = 
+    match join (map safeDivideByTwo (Success 10.0)) with 
+    | Success x -> x 
+    | Error e -> 0.0
