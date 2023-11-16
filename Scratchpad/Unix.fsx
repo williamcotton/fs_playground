@@ -69,4 +69,3 @@ let commandFunc commandName pattern (input : Result<string, string>) =
 
 let grep = commandFunc "grep"
 let awk = commandFunc "awk"
-  
