@@ -1,13 +1,9 @@
 #!/usr/bin/env dotnet fsi
 
-#r "nuget: SixLabors.ImageSharp"
-
 open System
 open System.Diagnostics
 open System.IO
 open System.Threading.Tasks
-open SixLabors.ImageSharp
-open SixLabors.ImageSharp.Formats.Png
 
 type CommandResult =
   { ExitCode: int

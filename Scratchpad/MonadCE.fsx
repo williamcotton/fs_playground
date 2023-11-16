@@ -18,7 +18,7 @@ type ResultBuilder() =
 
 let result = ResultBuilder()
 
-let computation = result {
+let computation= result {
   let! a = Success 10.0
   let! b = safeDivide 5.0 a
   let! c = safeDivide 2.0 b
