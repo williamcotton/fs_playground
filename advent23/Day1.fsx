@@ -2,7 +2,7 @@
 
 open Fetch
 open System.Text.RegularExpressions
-  
+
 let text = fetch "https://adventofcode.com/2023/day/1/input"
 
 let exampleA = "1abc2
@@ -18,7 +18,7 @@ let a = text.Split('\n')
             | first :: _ -> first + first
             | _ -> "0")
         |> Array.map (fun s -> int s)
-        |> Array.fold (+) 0
+        |> Array.sum
 
 printfn "%A" a
 
@@ -31,7 +31,7 @@ zoneight234
 7pqrstsixteen
 fivecgtwotwo3oneighth"
 
-let stringNumToString stringNum =
+let numberWordToDigitString stringNum =
     match stringNum with
     | "one" -> "1"
     | "two" -> "2"
@@ -44,19 +44,16 @@ let stringNumToString stringNum =
     | "nine" -> "9"
     | _ -> stringNum
 
+let lineTransform first last = numberWordToDigitString first + numberWordToDigitString last
+
 let b = text.Split('\n')
         |> Array.map (fun s -> Regex(@"(?=(one|two|three|four|five|six|seven|eight|nine|\d))").Matches(s))
         |> Array.map (fun m -> m |> Seq.map (fun g -> g.Groups.[1].Value) |> Seq.toList)
         |> Array.map (function
-            | first :: rest when List.length rest > 0 ->
-                let firstNum = stringNumToString first
-                let lastNum = stringNumToString (List.last rest)
-                firstNum + lastNum
-            | first :: _ -> 
-                let firstNum = stringNumToString first
-                firstNum + firstNum
+            | first :: rest when List.length rest > 0 -> lineTransform first (List.last rest)
+            | first :: _ -> lineTransform first first
             | _ -> "0")
         |> Array.map (fun s -> int s)
-        |> Array.fold (+) 0
+        |> Array.sum
 
 printfn "%A" b
