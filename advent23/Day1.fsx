@@ -45,8 +45,6 @@ let stringNumToString stringNum =
     | _ -> stringNum
 
 let b = text.Split('\n')
-        // |> Array.map (fun s -> Regex(@"(one|two|three|four|five|six|seven|eight|nine|\d)").Matches(s))
-        // |> Array.map (fun m -> m |> Seq.map (fun g -> g.Value) |> Seq.toList)
         |> Array.map (fun s -> Regex(@"(?=(one|two|three|four|five|six|seven|eight|nine|\d))").Matches(s))
         |> Array.map (fun m -> m |> Seq.map (fun g -> g.Groups.[1].Value) |> Seq.toList)
         |> Array.map (function
