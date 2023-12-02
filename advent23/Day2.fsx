@@ -19,10 +19,13 @@ let maxColors game =
   | "blue" -> (r, g, max b count)
   | _ -> (r, g, b)) (0, 0, 0)
 
-let a = text.Split('\n')
+let games = 
+    text.Split('\n')
       |> Array.map (fun s -> Regex(@"(?<count>\d+) (?<color>red|green|blue)").Matches(s)) 
       |> Array.map (fun m -> m |> Seq.map (fun g -> (g.Groups.["color"].Value, int g.Groups.["count"].Value)) |> Seq.toList)
       |> Array.filter (fun game -> game.Length > 0)
+
+let a = games
       |> Array.fold (fun (gameNumber, sumOfIdsOfGames) game ->
           match maxColors game with
           | (maxRed, maxGreen, maxBlue) when maxRed <= 12 && maxGreen <= 13 && maxBlue <= 14 -> 
@@ -34,15 +37,8 @@ let a = text.Split('\n')
 
 printfn "%A" a
 
-let b = text.Split('\n')
-      |> Array.map (fun s -> Regex(@"(?<count>\d+) (?<color>red|green|blue)").Matches(s)) 
-      |> Array.map (fun m -> m |> Seq.map (fun g -> (g.Groups.["color"].Value, int g.Groups.["count"].Value)) |> Seq.toList)
-      |> Array.filter (fun game -> game.Length > 0)
-      |> Array.fold (fun (gameNumber, sumOfMinColorPowers) game ->
-          let (maxRed, maxGreen, maxBlue) = maxColors game
-          let powers = maxRed * maxBlue * maxGreen
-          (gameNumber + 1, sumOfMinColorPowers + powers)
-        ) (1, 0)
-      |> snd
+let b = games
+      |> Array.map (fun game -> let (maxRed, maxGreen, maxBlue) = maxColors game in maxRed * maxGreen * maxBlue)
+      |> Array.sum
 
 printfn "%A" b
