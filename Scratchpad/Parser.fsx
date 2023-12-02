@@ -54,9 +54,6 @@ let orElse parser1 parser2 =
 
 let ( <|> ) = orElse
 
-let choice listOfParsers =
-  List.reduce ( <|> ) listOfParsers
-
 let pchar charToMatch =
   let innerFn str =
     if System.String.IsNullOrEmpty(str) then
@@ -70,6 +67,14 @@ let pchar charToMatch =
       Error msg
   Parser innerFn
 
+let choice listOfParsers =
+  List.reduce ( <|> ) listOfParsers
+  
+let anyOf listOfChars =
+  listOfChars
+  |> List.map pchar
+  |> choice
+
 let parseA = pchar 'a'
 let parseB = pchar 'b'
 run parseA "abc"
@@ -80,3 +85,6 @@ run parseAThenB "abc"
 let parseAOrElseB = parseA <|> parseB
 run parseAOrElseB "abc"
 
+let parseLowercase = anyOf ['a'..'z']
+
+run parseLowercase "abC"
