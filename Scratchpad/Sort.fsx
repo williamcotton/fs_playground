@@ -69,3 +69,19 @@ let rec insertionSort unsortedList =
   | head :: tail -> insert head (insertionSort tail)
 
 insertionSort list
+
+let insertionSortB list =
+  let rec insert x sortedList =
+      match sortedList with
+      | [] -> [x]
+      | head :: _ when x <= head -> x :: sortedList
+      | head :: tail -> head :: insert x tail
+
+  let rec sort unsortedList sortedList =
+      match unsortedList with
+      | [] -> sortedList
+      | head :: tail -> sort tail (insert head sortedList)
+
+  sort list []
+
+insertionSortB list
