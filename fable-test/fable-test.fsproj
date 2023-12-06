@@ -7,7 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Program.fs" />
+    <Compile Include="src/App.fs" />
+    <Compile Include="src/Server.fs" />
+    <Compile Include="src/Browser.fs" />
   </ItemGroup>
 
   <ItemGroup>
