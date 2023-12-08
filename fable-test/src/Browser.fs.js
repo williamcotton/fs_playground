@@ -1,8 +1,24 @@
-import { createRoot } from "react-dom/client";
+import browser_express from "browser-express";
+import express_link from "./browser/middleware/express-link.js";
+import react_renderer from "./browser/middleware/react-renderer.js";
 import { createElement } from "react";
-import { Counter } from "./App.fs.js";
+import { baseRoute, AppLayout } from "./App.fs.js";
+import { printf, toConsole } from "../fable_modules/fable-library.4.5.0/String.js";
 
-export const root = createRoot(document.getElementById("root"));
+export const app = browser_express();
 
-root.render(createElement(Counter, null));
+app.use(express_link());
+
+app.use(react_renderer({
+    app: app,
+    appLayout: (params) => createElement(AppLayout, {
+        params: params,
+    }),
+}));
+
+baseRoute(app);
+
+app.listen(3000, () => {
+    toConsole(printf("Listening on port 3000"));
+});
 
