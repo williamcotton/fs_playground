@@ -5,7 +5,10 @@
   "description": "",
   "main": "src/Server.fs.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start-server-dev": "nodemon src/Server.fs.js -w src/ --ext js",
+    "start-browser-dev": "webpack watch",
+    "start-fable-dev": "dotnet fable watch",
+    "dev": "run-p *-dev"
   },
   "keywords": [],
   "author": "",
@@ -19,10 +22,12 @@
     "process": "^0.11.10",
     "qs": "^6.11.2",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "webpack-cli": "^5.1.4"
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "webpack": "^5.89.0"
+    "nodemon": "^3.0.2",
+    "npm-run-all": "^4.1.5",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4"
   }
 }

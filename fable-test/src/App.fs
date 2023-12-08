@@ -10,7 +10,7 @@ open Express
 [<ReactComponent>]
 let AppLayout params =
     let contentElement : ReactElement =
-        emitJsExpr () "appLayoutInputProps.params.content"
+        emitJsExpr () "params.content"
     Html.div [
         Html.h1 "Hello World"
         Html.div [

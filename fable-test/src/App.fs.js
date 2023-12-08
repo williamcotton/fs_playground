@@ -6,7 +6,7 @@ import { useFeliz_React__React_useState_Static_1505 } from "../fable_modules/Fel
 
 export function AppLayout(appLayoutInputProps) {
     const params = appLayoutInputProps.params;
-    const contentElement = appLayoutInputProps.params.content;
+    const contentElement = params.content;
     const children_2 = ofArray([createElement("h1", {
         children: ["Hello World"],
     }), createElement("div", {
