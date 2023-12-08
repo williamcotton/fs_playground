@@ -13,7 +13,7 @@ let express : unit -> ExpressApp = jsNative
 let expressLinkMiddleware : unit -> unit = jsNative
 
 [<Import("default", "./browser/middleware/react-renderer.js")>]
-let reactRendererMiddleware : {| app: ExpressApp; appLayout: (unit -> ReactElement) -> ReactElement |} -> unit = jsNative
+let reactRendererMiddleware : {| app: ExpressApp; appLayout: obj -> ReactElement |} -> unit = jsNative
 
 [<Emit("app.use($0)")>]
 let useMiddleware middleware: unit = jsNative

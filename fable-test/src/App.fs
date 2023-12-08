@@ -8,8 +8,7 @@ open Fable.Core.JsInterop
 open Express
 
 [<ReactComponent>]
-let AppLayout (content: string, req: ExpressReq) =
-    printfn "%s" content
+let AppLayout params =
     let contentElement : ReactElement =
         emitJsExpr () "appLayoutInputProps.params.content"
     Html.div [
@@ -25,7 +24,7 @@ let Counter() =
     Html.div [
         Html.h1 count
         Html.button [
-            prop.text "Increment123"
+            prop.text "Increment"
             prop.onClick (fun _ -> setCount(count + 1))
         ]
     ]

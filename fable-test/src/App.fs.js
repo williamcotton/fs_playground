@@ -1,14 +1,11 @@
 import { createElement } from "react";
 import React from "react";
-import { printf, toConsole } from "../fable_modules/fable-library.4.5.0/String.js";
 import { Interop_reactApi } from "../fable_modules/Feliz.2.7.0/./Interop.fs.js";
 import { ofArray } from "../fable_modules/fable-library.4.5.0/List.js";
 import { useFeliz_React__React_useState_Static_1505 } from "../fable_modules/Feliz.2.7.0/React.fs.js";
 
 export function AppLayout(appLayoutInputProps) {
-    const req = appLayoutInputProps.req;
-    const content = appLayoutInputProps.content;
-    toConsole(printf("%s"))(content);
+    const params = appLayoutInputProps.params;
     const contentElement = appLayoutInputProps.params.content;
     const children_2 = ofArray([createElement("h1", {
         children: ["Hello World"],
@@ -27,7 +24,7 @@ export function Counter() {
     const children = ofArray([createElement("h1", {
         children: [count],
     }), createElement("button", {
-        children: "Increment123",
+        children: "Increment",
         onClick: (_arg) => {
             setCount(count + 1);
         },

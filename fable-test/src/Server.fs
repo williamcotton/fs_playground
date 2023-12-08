@@ -21,7 +21,7 @@ let cookieSession : {| name: string; sameSite: string; secret: string |} -> unit
 let expressLinkMiddleware : {| title: string |} -> unit = jsNative
 
 [<Import("default", "./server/middleware/react-renderer.js")>]
-let reactRendererMiddleware : {| appLayout: (unit -> ReactElement) -> ReactElement |} -> unit = jsNative
+let reactRendererMiddleware : {| appLayout: obj -> ReactElement |} -> unit = jsNative
 
 [<Emit("app.use($0)")>]
 let useMiddleware middleware: unit = jsNative
