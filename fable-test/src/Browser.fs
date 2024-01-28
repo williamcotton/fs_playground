@@ -22,7 +22,7 @@ let app = express()
 useMiddleware(expressLinkMiddleware())
 useMiddleware(reactRendererMiddleware({| app = app; appLayout = AppLayout |}))
 
-baseRoute(app)
+universalApp app
 
 app.listen(3000, fun _ ->
     printfn "Listening on port 3000"

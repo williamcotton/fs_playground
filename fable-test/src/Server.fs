@@ -36,7 +36,7 @@ useMiddleware(csurf())
 useMiddleware(expressLinkMiddleware({| title = "Test"|}))
 useMiddleware(reactRendererMiddleware({| appLayout = AppLayout |}))
 
-baseRoute app 
+universalApp app 
 
 app.listen(3000, fun _ ->
     printfn "Listening on port 3000"
