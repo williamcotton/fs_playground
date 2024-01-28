@@ -18,7 +18,7 @@ type AppLayoutParams = {
 let AppLayout (params: AppLayoutParams) =
     React.contextProvider(requestContext, params.req, React.fragment [
         Html.div [
-            prop.className "body" // Adding class name here
+            prop.className "body"
             yield params.req.Link {| href = "/"; children = [ Html.h1 "Fable Universal Express Demo" ] |} 
             yield Html.div [
                 params.content

@@ -1,5 +1,5 @@
-import { class_type } from "../fable_modules/fable-library.4.5.0/Reflection.js";
 
+<<<<<<< HEAD
 export class ExpressApp {
     constructor() {
     }
@@ -7,5 +7,9 @@ export class ExpressApp {
 
 export function ExpressApp_$reflection() {
     return class_type("Express.ExpressApp", void 0, ExpressApp);
+=======
+export function consoleLog(text) {
+    throw 1;
+>>>>>>> a62e8fd (updates for POST and Form)
 }
 
