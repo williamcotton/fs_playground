@@ -4,6 +4,8 @@ import React from "react";
 import * as react from "react";
 import { Interop_reactApi } from "../fable_modules/Feliz.2.7.0/./Interop.fs.js";
 import { ofArray } from "../fable_modules/fable-library.4.5.0/List.js";
+import { isException } from "../fable_modules/fable-library.4.5.0/Types.js";
+import { printf, toText } from "../fable_modules/fable-library.4.5.0/String.js";
 
 export const requestContext = React_createContext_Z10F951C2("Request");
 
@@ -65,6 +67,40 @@ export function Test() {
     });
 }
 
+export function verifyPost(value) {
+    if (value == null) {
+        return void 0;
+    }
+    else {
+        const value_1 = value;
+        if (value_1 === "test") {
+            return "test";
+        }
+        else {
+            return void 0;
+        }
+    }
+}
+
+export function errorHandler(err, req, res, next) {
+    let arg;
+    if (isException(err)) {
+        const ex = err;
+        console.log(ex.message);
+        res.send((arg = ex.message, toText(printf("An error occurred: %s"))(arg)));
+    }
+    else {
+        next();
+    }
+}
+
+export function notFoundHandler(req, res, next) {
+    res.status(404);
+    const value_2 = res.renderComponent(createElement("p", {
+        children: ["Not found"],
+    }));
+}
+
 export function universalApp(app) {
     app.get("/", (req, res, _arg) => {
         const value = res.renderComponent(createElement(Counter, null));
@@ -75,17 +111,24 @@ export function universalApp(app) {
     app.post("/test_post", (req_2, res_2, _arg_2) => {
         const body = req_2.body;
         const test = req_2.body.test;
-        if (test == null) {
+        const matchValue = verifyPost(test);
+        if (matchValue == null) {
             const value_6 = res_2.renderComponent(createElement("p", {
-                children: ["No value"],
+                children: ["Not valid"],
             }));
         }
         else {
-            const value_2 = test;
+            const value_2 = matchValue;
             const value_4 = res_2.renderComponent(createElement("p", {
                 children: ["Value: " + value_2],
             }));
         }
+    });
+    app.use((req_3, res_3, next) => {
+        notFoundHandler(req_3, res_3, next);
+    });
+    app.use((err, req_4, res_4, next_1) => {
+        errorHandler(err, req_4, res_4, next_1);
     });
 }
 

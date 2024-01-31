@@ -56,6 +56,29 @@ let Test() =
         ] |}
     ]
 
+let verifyPost value =
+    match value with
+    | Some(value) -> 
+        match value with
+        "test" -> 
+            Some("test")
+        | _ ->
+            None
+    | None -> 
+        None
+
+let errorHandler (err: obj) (req: ExpressReq) (res: ExpressRes) (next: unit -> unit) =
+    match err with
+    | :? System.Exception as ex ->
+        consoleLog ex.Message
+        res.send (sprintf "An error occurred: %s" ex.Message)
+    | _ ->
+        next()
+
+let notFoundHandler (req: ExpressReq) (res: ExpressRes) (next: unit -> unit) =
+    res.status 404 |> ignore
+    res.renderComponent(Html.p "Not found") |> ignore
+
 let universalApp (app: ExpressApp) =
     app.get("/", fun req res _ ->
         res.renderComponent(Counter())
@@ -70,9 +93,12 @@ let universalApp (app: ExpressApp) =
     app.post("/test_post", fun req res _ ->
         let body = req.body
         let test = req.``body``?test :> string option
-        match test with
+        match verifyPost test with
         | Some(value) -> 
             res.renderComponent(Html.p ("Value: " + value) )|> ignore
         | None -> 
-            res.renderComponent(Html.p "No value") |> ignore
+            res.renderComponent(Html.p "Not valid") |> ignore
     )
+
+    app.``use`` notFoundHandler
+    app.``use`` errorHandler
