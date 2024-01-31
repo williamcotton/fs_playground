@@ -1,4 +1,4 @@
 node_modules/
 fable_modules/
-public/
+public/app.js
 .fake
