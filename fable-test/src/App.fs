@@ -9,17 +9,18 @@ open Express
 
 let requestContext = React.createContext(name="Request")
 
+type AppLayoutParams = {
+    content: ReactElement
+    req: ExpressReq
+}
+
 [<ReactComponent>]
-let AppLayout params =
-    let contentElement : ReactElement =
-        emitJsExpr () "params.content"
-    let req : ExpressReq = 
-        emitJsExpr () "params.req"
-    React.contextProvider(requestContext, req, React.fragment [
+let AppLayout (params: AppLayoutParams) =
+    React.contextProvider(requestContext, params.req, React.fragment [
         Html.div [
             Html.h1 "Fable Universal Express Demo"
             Html.div [
-                contentElement
+                params.content
             ]
     ]])
 
@@ -34,6 +35,18 @@ let Counter() =
             prop.onClick (fun _ -> setCount(count + 1))
         ]
         req.Link {| href = "/test"; children = "Test" |} 
+        req.Link {| href = "/error"; children = "Error" |} 
+    ]
+
+type ButtonProps = {
+    title: string
+}
+
+[<ReactComponent>]
+let Button(props: ButtonProps) =
+    Html.input [
+        prop.type' "submit"
+        prop.value props.title
     ]
 
 [<ReactComponent>]
@@ -49,10 +62,7 @@ let Test() =
                 prop.type' "text"
                 prop.name "test"
             ]
-            Html.input [
-                prop.type' "submit"
-                prop.value "Submit"
-            ]
+            Button { title = "Submit" }
         ] |}
     ]
 
@@ -71,13 +81,11 @@ let errorHandler (err: obj) (req: ExpressReq) (res: ExpressRes) (next: unit -> u
     match err with
     | :? System.Exception as ex ->
         consoleLog ex.Message
-        res.send (sprintf "An error occurred: %s" ex.Message)
+        let message = ex.Message
+        res.status 500 |> ignore
+        res.renderComponent(Html.div [ Html.p "We're sorry, something went wrong!"; Html.pre message]) |> ignore
     | _ ->
         next()
-
-let notFoundHandler (req: ExpressReq) (res: ExpressRes) (next: unit -> unit) =
-    res.status 404 |> ignore
-    res.renderComponent(Html.p "Not found") |> ignore
 
 let universalApp (app: ExpressApp) =
     app.get("/", fun req res _ ->
@@ -89,6 +97,8 @@ let universalApp (app: ExpressApp) =
         res.renderComponent(Test())
         |> ignore
     )
+
+    app.get("/error", fun req res _ -> raise (System.Exception("Some sort of detailed error message")))
     
     app.post("/test_post", fun req res _ ->
         let body = req.body
@@ -100,5 +110,9 @@ let universalApp (app: ExpressApp) =
             res.renderComponent(Html.p "Not valid") |> ignore
     )
 
-    app.``use`` notFoundHandler
+    app.``use`` (fun (req: ExpressReq) (res: ExpressRes) next ->
+        res.status 404 |> ignore
+        res.renderComponent(Html.p "Page not found") |> ignore
+    )
+
     app.``use`` errorHandler
