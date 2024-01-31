@@ -18,7 +18,7 @@ let csurf : unit -> unit = jsNative
 let cookieSession : {| name: string; sameSite: string; secret: string |} -> unit = jsNative
 
 [<Import("default", "./server/middleware/express-link.js")>]
-let expressLinkMiddleware : {| title: string |} -> unit = jsNative
+let expressLinkMiddleware : {| defaultTitle: string |} -> unit = jsNative
 
 [<Import("default", "./server/middleware/react-renderer.js")>]
 let reactRendererMiddleware : {| appLayout: obj -> ReactElement |} -> unit = jsNative
@@ -33,7 +33,7 @@ let app = express()
 useMiddleware(expressStatic("public"))
 useMiddleware(cookieSession({| name = "session"; sameSite = "lax"; secret = sessionSecret |}))
 useMiddleware(csurf())
-useMiddleware(expressLinkMiddleware({| title = "Test"|}))
+useMiddleware(expressLinkMiddleware({| defaultTitle = "Fable Universal Express Demo"|}))
 useMiddleware(reactRendererMiddleware({| appLayout = AppLayout |}))
 
 universalApp app 

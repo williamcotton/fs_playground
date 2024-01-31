@@ -17,7 +17,7 @@ let AppLayout params =
         emitJsExpr () "params.req"
     React.contextProvider(requestContext, req, React.fragment [
         Html.div [
-            Html.h1 "Hello World"
+            Html.h1 "Fable Universal Express Demo"
             Html.div [
                 contentElement
             ]
@@ -28,7 +28,7 @@ let Counter() =
     let (count, setCount) = React.useState(0)
     let req : ExpressReq = React.useContext(requestContext)
     Html.div [
-        Html.h1 count
+        Html.h2 count
         Html.button [
             prop.text "Increment"
             prop.onClick (fun _ -> setCount(count + 1))
@@ -41,8 +41,8 @@ let Test() =
     let (count, setCount) = React.useState(0)
     let req : ExpressReq = React.useContext(requestContext)
     Html.div [
-        Html.h1 [
-            prop.text "Test"
+        Html.h2 [
+            prop.text "Form POST Demo"
         ]
         req.Form {| action = "/test_post"; method = "POST"; children = [
             Html.input [
@@ -55,7 +55,6 @@ let Test() =
             ]
         ] |}
     ]
-    
 
 let universalApp (app: ExpressApp) =
     app.get("/", fun req res _ ->
@@ -70,10 +69,10 @@ let universalApp (app: ExpressApp) =
     
     app.post("/test_post", fun req res _ ->
         let body = req.body
-        let test = req.``body``?test
+        let test = req.``body``?test :> string option
         match test with
         | Some(value) -> 
-            res.send(value) |> ignore
+            res.renderComponent(Html.p ("Value: " + value) )|> ignore
         | None -> 
-            res.send("No name provided") |> ignore
+            res.renderComponent(Html.p "No value") |> ignore
     )

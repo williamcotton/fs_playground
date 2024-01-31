@@ -4,7 +4,6 @@ import React from "react";
 import * as react from "react";
 import { Interop_reactApi } from "../fable_modules/Feliz.2.7.0/./Interop.fs.js";
 import { ofArray } from "../fable_modules/fable-library.4.5.0/List.js";
-import { value as value_10 } from "../fable_modules/fable-library.4.5.0/Option.js";
 
 export const requestContext = React_createContext_Z10F951C2("Request");
 
@@ -14,7 +13,7 @@ export function AppLayout(appLayoutInputProps) {
     const contentElement = params.content;
     const req = params.req;
     return React_contextProvider_34D9BBBD(requestContext, req, (xs = [(children_2 = ofArray([createElement("h1", {
-        children: ["Hello World"],
+        children: ["Fable Universal Express Demo"],
     }), createElement("div", {
         children: Interop_reactApi.Children.toArray([contentElement]),
     })]), createElement("div", {
@@ -27,7 +26,7 @@ export function Counter() {
     const setCount = patternInput[1];
     const count = patternInput[0] | 0;
     const req = useReact_useContext_37FA55CF(requestContext);
-    const children = ofArray([createElement("h1", {
+    const children = ofArray([createElement("h2", {
         children: [count],
     }), createElement("button", {
         children: "Increment",
@@ -48,8 +47,8 @@ export function Test() {
     const setCount = patternInput[1];
     const count = patternInput[0] | 0;
     const req = useReact_useContext_37FA55CF(requestContext);
-    const children = ofArray([createElement("h1", {
-        children: "Test",
+    const children = ofArray([createElement("h2", {
+        children: "Form POST Demo",
     }), req.Form({
         action: "/test_post",
         children: ofArray([createElement("input", {
@@ -77,11 +76,15 @@ export function universalApp(app) {
         const body = req_2.body;
         const test = req_2.body.test;
         if (test == null) {
-            const value_4 = res_2.send("No name provided");
+            const value_6 = res_2.renderComponent(createElement("p", {
+                children: ["No value"],
+            }));
         }
         else {
-            const value_2 = value_10(test);
-            const value_3 = res_2.send(value_2);
+            const value_2 = test;
+            const value_4 = res_2.renderComponent(createElement("p", {
+                children: ["Value: " + value_2],
+            }));
         }
     });
 }

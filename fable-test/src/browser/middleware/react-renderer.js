@@ -1,4 +1,5 @@
 import ReactDOM from 'react-dom';
+import { createRoot } from "react-dom/client";
 import React from 'react';
 import serialize from 'form-serialize';
 
@@ -37,10 +38,11 @@ export default ({ app, appLayout }) => (req, res, next) => {
     const statusCode = options.statusCode || 200;
     const layout = options.layout || appLayout;
     const { appContainer } = req.renderDocument({ title, description });
-    ReactDOM.hydrate(React.createElement(layout, { content, req }), appContainer, () => {
-      res.status(statusCode);
-      res.send();
-    });
+    const root = app.root || createRoot(appContainer);
+    app.root = root;
+    root.render(React.createElement(layout, { content, req }));
+    res.status(statusCode);
+    res.send();
   };
 
   next();

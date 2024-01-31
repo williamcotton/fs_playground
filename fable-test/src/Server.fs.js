@@ -22,7 +22,7 @@ app.use(cookie_session({
 app.use(csurf());
 
 app.use(express_link({
-    title: "Test",
+    defaultTitle: "Fable Universal Express Demo",
 }));
 
 app.use(react_renderer({
