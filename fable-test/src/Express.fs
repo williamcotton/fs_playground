@@ -22,6 +22,8 @@ type ExpressReq =
   abstract member secure : bool
   abstract member xhr : bool
   abstract member status : int
+  abstract member navigate: string * obj option -> unit
+  abstract member submit: string * string option * obj -> unit
 
 type ExpressRes =
   abstract member send : obj -> unit
@@ -34,6 +36,8 @@ type ExpressApp =
   abstract member listen: int * (unit -> unit) -> unit
   abstract member ``use``: (obj -> ExpressReq -> ExpressRes -> (unit -> unit) -> unit) -> unit
   abstract member ``use``: (ExpressReq -> ExpressRes -> (unit -> unit) -> unit) -> unit
+  abstract member navigate: string * obj option -> unit
+  abstract member submit: string * string option * obj -> unit
 
 [<Emit("console.log($0)")>]
 let consoleLog text: unit = jsNative
