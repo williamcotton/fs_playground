@@ -26,6 +26,7 @@ type ExpressReq =
 type ExpressRes =
   abstract member send : obj -> unit
   abstract member renderComponent : ReactElement -> unit
+  abstract member renderComponent : JSX.Element -> unit
   abstract member status : int -> ExpressReq
 
 type ExpressApp =

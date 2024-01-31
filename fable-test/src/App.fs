@@ -18,17 +18,19 @@ type AppLayoutParams = {
 let AppLayout (params: AppLayoutParams) =
     React.contextProvider(requestContext, params.req, React.fragment [
         Html.div [
-            Html.h1 "Fable Universal Express Demo"
-            Html.div [
+            prop.className "body" // Adding class name here
+            yield params.req.Link {| href = "/"; children = [ Html.h1 "Fable Universal Express Demo" ] |} 
+            yield Html.div [
                 params.content
             ]
-    ]])
+        ]
+    ])
 
 [<ReactComponent>]
 let Counter() =
     let (count, setCount) = React.useState(0)
     let req : ExpressReq = React.useContext(requestContext)
-    Html.div [
+    React.fragment [
         Html.h2 count
         Html.button [
             prop.text "Increment"
@@ -53,7 +55,7 @@ let Button(props: ButtonProps) =
 let Test() =
     let (count, setCount) = React.useState(0)
     let req : ExpressReq = React.useContext(requestContext)
-    Html.div [
+    React.fragment [
         Html.h2 [
             prop.text "Form POST Demo"
         ]
@@ -65,6 +67,15 @@ let Test() =
             Button { title = "Submit" }
         ] |}
     ]
+
+// [<JSX.Component>]
+// let JSXTest() = // (Msg -> unit) -> JSX. Element
+//     JSX.jsx
+//         $"""
+//         <div>
+//             <h4>JSX!</h4>
+//         </div>
+//         """
 
 let verifyPost value =
     match value with
@@ -97,6 +108,11 @@ let universalApp (app: ExpressApp) =
         res.renderComponent(Test())
         |> ignore
     )
+
+    // app.get("/jsx", fun req res _ ->
+    //     res.renderComponent(JSXTest())
+    //     |> ignore
+    // )
 
     app.get("/error", fun req res _ -> raise (System.Exception("Some sort of detailed error message")))
     

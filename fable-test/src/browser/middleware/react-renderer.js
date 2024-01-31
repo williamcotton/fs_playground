@@ -4,11 +4,22 @@ import React from 'react';
 import serialize from 'form-serialize';
 
 export default ({ app, appLayout }) => (req, res, next) => {
+  const onClick = (e) => {
+    e.preventDefault();
+    function hrefOrParent(target) {
+      if (target.href) {
+        return target.href;
+      }
+      if (target.parentElement) {
+        return hrefOrParent(target.parentElement);
+      }
+      return false;
+    }
+    const href = hrefOrParent(e.currentTarget);
+    app.navigate(href);
+  };
+
   const Link = (props) => {
-    const onClick = (e) => {
-      e.preventDefault();
-      app.navigate(e.target.href);
-    };
     const mergedProps = { onClick, ...props };
     return React.createElement('a', mergedProps);
   };

@@ -4,8 +4,9 @@ import { string_type, record_type, class_type } from "../fable_modules/fable-lib
 import { createElement } from "react";
 import React from "react";
 import * as react from "react";
+import { singleton, append, delay, toList } from "../fable_modules/fable-library.4.5.0/Seq.js";
+import { ofArray, singleton as singleton_1 } from "../fable_modules/fable-library.4.5.0/List.js";
 import { Interop_reactApi } from "../fable_modules/Feliz.2.7.0/./Interop.fs.js";
-import { ofArray } from "../fable_modules/fable-library.4.5.0/List.js";
 
 export const requestContext = React_createContext_Z10F951C2("Request");
 
@@ -23,11 +24,17 @@ export function AppLayoutParams_$reflection() {
 
 export function AppLayout(params) {
     let xs, children_2;
-    return React_contextProvider_34D9BBBD(requestContext, params.req, (xs = [(children_2 = ofArray([createElement("h1", {
-        children: ["Fable Universal Express Demo"],
-    }), createElement("div", {
-        children: Interop_reactApi.Children.toArray([params.content]),
-    })]), createElement("div", {
+    return React_contextProvider_34D9BBBD(requestContext, params.req, (xs = [(children_2 = toList(delay(() => {
+        ["className", "body"];
+        return append(singleton(params.req.Link({
+            children: singleton_1(createElement("h1", {
+                children: ["Fable Universal Express Demo"],
+            })),
+            href: "/",
+        })), delay(() => singleton(createElement("div", {
+            children: Interop_reactApi.Children.toArray([params.content]),
+        }))));
+    })), createElement("div", {
         children: Interop_reactApi.Children.toArray(Array.from(children_2)),
     }))], react.createElement(react.Fragment, {}, ...xs)));
 }
@@ -37,7 +44,7 @@ export function Counter() {
     const setCount = patternInput[1];
     const count = patternInput[0] | 0;
     const req = useReact_useContext_37FA55CF(requestContext);
-    const children = ofArray([createElement("h2", {
+    const xs_1 = [createElement("h2", {
         children: [count],
     }), createElement("button", {
         children: "Increment",
@@ -50,10 +57,8 @@ export function Counter() {
     }), req.Link({
         children: "Error",
         href: "/error",
-    })]);
-    return createElement("div", {
-        children: Interop_reactApi.Children.toArray(Array.from(children)),
-    });
+    })];
+    return react.createElement(react.Fragment, {}, ...xs_1);
 }
 
 export class ButtonProps extends Record {
@@ -79,7 +84,7 @@ export function Test() {
     const setCount = patternInput[1];
     const count = patternInput[0] | 0;
     const req = useReact_useContext_37FA55CF(requestContext);
-    const children = ofArray([createElement("h2", {
+    const xs_2 = [createElement("h2", {
         children: "Form POST Demo",
     }), req.Form({
         action: "/test_post",
@@ -88,10 +93,8 @@ export function Test() {
             name: "test",
         }), createElement(Button, new ButtonProps("Submit"))]),
         method: "POST",
-    })]);
-    return createElement("div", {
-        children: Interop_reactApi.Children.toArray(Array.from(children)),
-    });
+    })];
+    return react.createElement(react.Fragment, {}, ...xs_2);
 }
 
 export function verifyPost(value) {
