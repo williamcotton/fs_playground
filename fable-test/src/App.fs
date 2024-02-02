@@ -3,25 +3,19 @@
 open Node.Api
 open Feliz
 open Fable.Core
-open Fable.Import.Express
 open Fable.Core.JsInterop
 open Express
 
 let requestContext = React.createContext(name="Request")
 
-type AppLayoutParams = {
-    content: ReactElement
-    req: ExpressReq
-}
-
 [<ReactComponent>]
-let AppLayout (params: AppLayoutParams) =
-    React.contextProvider(requestContext, params.req, React.fragment [
+let AppLayout (props: {| content: ReactElement; req: ExpressReq |}) =
+    React.contextProvider(requestContext, props.req, React.fragment [
         Html.div [
-            prop.className "body"
-            yield params.req.Link {| href = "/"; children = [ Html.h1 "Fable Universal Express Demo" ] |} 
+            prop.className "body" |> ignore
+            yield props.req.Link {| href = "/"; children = [ Html.h1 "Fable Universal Express Demo" ] |} 
             yield Html.div [
-                params.content
+                props.content
             ]
         ]
     ])
@@ -40,12 +34,8 @@ let Counter() =
         req.Link {| href = "/error"; children = "Error" |} 
     ]
 
-type ButtonProps = {
-    title: string
-}
-
 [<ReactComponent>]
-let Button(props: ButtonProps) =
+let Button(props: {| title: string |}) =
     Html.input [
         prop.type' "submit"
         prop.value props.title
@@ -53,7 +43,6 @@ let Button(props: ButtonProps) =
 
 [<ReactComponent>]
 let Test() =
-    let (count, setCount) = React.useState(0)
     let req : ExpressReq = React.useContext(requestContext)
     React.fragment [
         Html.h2 [
@@ -64,29 +53,15 @@ let Test() =
                 prop.type' "text"
                 prop.name "test"
             ]
-            Button { title = "Submit" }
+            Button {| title = "Submit" |}
         ] |}
     ]
 
-// [<JSX.Component>]
-// let JSXTest() = // (Msg -> unit) -> JSX. Element
-//     JSX.jsx
-//         $"""
-//         <div>
-//             <h4>JSX!</h4>
-//         </div>
-//         """
-
-let verifyPost value =
+let verifyPost (value: string option) =
     match value with
-    | Some(value) -> 
-        match value with
-        "test" -> 
-            Some("test")
-        | _ ->
-            None
-    | None -> 
-        None
+    | Some s when s.Length >= 5 -> Ok s
+    | Some _ -> Error "The value must be at least 6 characters long."
+    | None -> Error "No value provided."
 
 let errorHandler (err: obj) (req: ExpressReq) (res: ExpressRes) (next: unit -> unit) =
     match err with
@@ -94,7 +69,7 @@ let errorHandler (err: obj) (req: ExpressReq) (res: ExpressRes) (next: unit -> u
         consoleLog ex.Message
         let message = ex.Message
         res.status 500 |> ignore
-        res.renderComponent(Html.div [ Html.p "We're sorry, something went wrong!"; Html.pre message]) |> ignore
+        res.send(message) |> ignore
     | _ ->
         next()
 
@@ -109,21 +84,17 @@ let universalApp (app: ExpressApp) =
         |> ignore
     )
 
-    // app.get("/jsx", fun req res _ ->
-    //     res.renderComponent(JSXTest())
-    //     |> ignore
-    // )
-
     app.get("/error", fun req res _ -> raise (System.Exception("Some sort of detailed error message")))
     
     app.post("/test_post", fun req res _ ->
         let body = req.body
-        let test = req.``body``?test :> string option
+        let test: string option = req.``body``?test
         match verifyPost test with
-        | Some(value) -> 
-            res.renderComponent(Html.p ("Value: " + value) )|> ignore
-        | None -> 
-            res.renderComponent(Html.p "Not valid") |> ignore
+        | Ok(value) ->
+            res.renderComponent(Html.p ("Value: " + value)) |> ignore
+        | Error(msg) ->
+            res.status 400 |> ignore
+            res.renderComponent(Html.p msg) |> ignore
     )
 
     app.``use`` (fun (req: ExpressReq) (res: ExpressRes) next ->

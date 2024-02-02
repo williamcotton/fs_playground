@@ -26,7 +26,7 @@ app.use(express_link({
 }));
 
 app.use(react_renderer({
-    appLayout: (params) => createElement(AppLayout, params),
+    appLayout: (props) => createElement(AppLayout, props),
 }));
 
 universalApp(app);

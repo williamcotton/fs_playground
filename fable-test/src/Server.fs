@@ -21,7 +21,7 @@ let cookieSession : {| name: string; sameSite: string; secret: string |} -> unit
 let expressLinkMiddleware : {| defaultTitle: string |} -> unit = jsNative
 
 [<Import("default", "./server/middleware/react-renderer.js")>]
-let reactRendererMiddleware : {| appLayout: AppLayoutParams -> ReactElement |} -> unit = jsNative
+let reactRendererMiddleware : {| appLayout: {| content: ReactElement; req: ExpressReq |} -> ReactElement |} -> unit = jsNative
 
 [<Emit("app.use($0)")>]
 let useMiddleware middleware: unit = jsNative
@@ -36,7 +36,7 @@ useMiddleware(csurf())
 useMiddleware(expressLinkMiddleware({| defaultTitle = "Fable Universal Express Demo"|}))
 useMiddleware(reactRendererMiddleware({| appLayout = AppLayout |}))
 
-universalApp app 
+universalApp app
 
 app.listen(3000, fun _ ->
     printfn "Listening on port 3000"

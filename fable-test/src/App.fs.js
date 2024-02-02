@@ -1,38 +1,26 @@
 import { useReact_useContext_37FA55CF, useFeliz_React__React_useState_Static_1505, React_contextProvider_34D9BBBD, React_createContext_Z10F951C2 } from "../fable_modules/Feliz.2.7.0/React.fs.js";
-import { isException, Record } from "../fable_modules/fable-library.4.5.0/Types.js";
-import { string_type, record_type, class_type } from "../fable_modules/fable-library.4.5.0/Reflection.js";
 import { createElement } from "react";
 import React from "react";
 import * as react from "react";
 import { singleton, append, delay, toList } from "../fable_modules/fable-library.4.5.0/Seq.js";
 import { ofArray, singleton as singleton_1 } from "../fable_modules/fable-library.4.5.0/List.js";
 import { Interop_reactApi } from "../fable_modules/Feliz.2.7.0/./Interop.fs.js";
+import { FSharpResult$2 } from "../fable_modules/fable-library.4.5.0/Choice.js";
+import { isException } from "../fable_modules/fable-library.4.5.0/Types.js";
 
 export const requestContext = React_createContext_Z10F951C2("Request");
 
-export class AppLayoutParams extends Record {
-    constructor(content, req) {
-        super();
-        this.content = content;
-        this.req = req;
-    }
-}
-
-export function AppLayoutParams_$reflection() {
-    return record_type("App.AppLayoutParams", [], AppLayoutParams, () => [["content", class_type("Fable.React.ReactElement")], ["req", class_type("Express.ExpressReq")]]);
-}
-
-export function AppLayout(params) {
+export function AppLayout(props) {
     let xs, children_2;
-    return React_contextProvider_34D9BBBD(requestContext, params.req, (xs = [(children_2 = toList(delay(() => {
+    return React_contextProvider_34D9BBBD(requestContext, props.req, (xs = [(children_2 = toList(delay(() => {
         ["className", "body"];
-        return append(singleton(params.req.Link({
+        return append(singleton(props.req.Link({
             children: singleton_1(createElement("h1", {
                 children: ["Fable Universal Express Demo"],
             })),
             href: "/",
         })), delay(() => singleton(createElement("div", {
-            children: Interop_reactApi.Children.toArray([params.content]),
+            children: Interop_reactApi.Children.toArray([props.content]),
         }))));
     })), createElement("div", {
         children: Interop_reactApi.Children.toArray(Array.from(children_2)),
@@ -61,17 +49,6 @@ export function Counter() {
     return react.createElement(react.Fragment, {}, ...xs_1);
 }
 
-export class ButtonProps extends Record {
-    constructor(title) {
-        super();
-        this.title = title;
-    }
-}
-
-export function ButtonProps_$reflection() {
-    return record_type("App.ButtonProps", [], ButtonProps, () => [["title", string_type]]);
-}
-
 export function Button(props) {
     return createElement("input", {
         type: "submit",
@@ -80,9 +57,6 @@ export function Button(props) {
 }
 
 export function Test() {
-    const patternInput = useFeliz_React__React_useState_Static_1505(0);
-    const setCount = patternInput[1];
-    const count = patternInput[0] | 0;
     const req = useReact_useContext_37FA55CF(requestContext);
     const xs_2 = [createElement("h2", {
         children: "Form POST Demo",
@@ -91,41 +65,35 @@ export function Test() {
         children: ofArray([createElement("input", {
             type: "text",
             name: "test",
-        }), createElement(Button, new ButtonProps("Submit"))]),
+        }), createElement(Button, {
+            title: "Submit",
+        })]),
         method: "POST",
     })];
     return react.createElement(react.Fragment, {}, ...xs_2);
 }
 
 export function verifyPost(value) {
+    let s;
     if (value == null) {
-        return void 0;
+        return new FSharpResult$2(1, ["No value provided."]);
+    }
+    else if ((s = value, s.length >= 5)) {
+        const s_1 = value;
+        return new FSharpResult$2(0, [s_1]);
     }
     else {
-        const value_1 = value;
-        if (value_1 === "test") {
-            return "test";
-        }
-        else {
-            return void 0;
-        }
+        return new FSharpResult$2(1, ["The value must be at least 6 characters long."]);
     }
 }
 
 export function errorHandler(err, req, res, next) {
-    let children;
     if (isException(err)) {
         const ex = err;
         console.log(ex.message);
         const message = ex.message;
         res.status(500);
-        const value_3 = res.renderComponent((children = ofArray([createElement("p", {
-            children: ["We\'re sorry, something went wrong!"],
-        }), createElement("pre", {
-            children: [message],
-        })]), createElement("div", {
-            children: Interop_reactApi.Children.toArray(Array.from(children)),
-        })));
+        const value_1 = res.send(message);
     }
     else {
         next();
@@ -146,13 +114,15 @@ export function universalApp(app) {
         const body = req_3.body;
         const test = req_3.body.test;
         const matchValue = verifyPost(test);
-        if (matchValue == null) {
-            const value_6 = res_3.renderComponent(createElement("p", {
-                children: ["Not valid"],
+        if (matchValue.tag === 1) {
+            const msg = matchValue.fields[0];
+            res_3.status(400);
+            const value_7 = res_3.renderComponent(createElement("p", {
+                children: [msg],
             }));
         }
         else {
-            const value_2 = matchValue;
+            const value_2 = matchValue.fields[0];
             const value_4 = res_3.renderComponent(createElement("p", {
                 children: ["Value: " + value_2],
             }));
@@ -160,7 +130,7 @@ export function universalApp(app) {
     });
     app.use((req_4, res_4, next) => {
         res_4.status(404);
-        const value_9 = res_4.renderComponent(createElement("p", {
+        const value_10 = res_4.renderComponent(createElement("p", {
             children: ["Page not found"],
         }));
     });
