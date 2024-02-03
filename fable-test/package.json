@@ -6,9 +6,11 @@
   "main": "src/Server.fs.js",
   "scripts": {
     "start-server-dev": "nodemon src/Server.fs.js -w src/ --ext js",
-    "start-browser-dev": "webpack watch",
+    "start-browser-dev": "webpack --mode development --watch --env development",
     "start-fable-dev": "dotnet fable watch",
-    "dev": "run-p *-dev"
+    "dev": "run-p *-dev",
+    "build": "dotnet fable && webpack --mode production --env production && uglifyjs public/app.js -o public/app.js",
+    "start": "node src/Server.fs.js"
   },
   "keywords": [],
   "author": "",
@@ -27,6 +29,7 @@
   "devDependencies": {
     "nodemon": "^3.0.2",
     "npm-run-all": "^4.1.5",
+    "uglify-js": "^3.17.4",
     "webpack": "^5.89.0",
     "webpack-cli": "^5.1.4"
   }

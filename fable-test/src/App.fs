@@ -11,11 +11,11 @@ let requestContext = React.createContext(name="Request")
 [<ReactComponent>]
 let AppLayout (props: {| content: ReactElement; req: ExpressReq |}) =
     React.contextProvider(requestContext, props.req, React.fragment [
-        Html.div [
-            prop.className "body" |> ignore
-            yield props.req.Link {| href = "/"; children = [ Html.h1 "Fable Universal Express Demo" ] |} 
-            yield Html.div [
-                props.content
+        React.fragment [
+            props.req.Link {| href = "/"; children = [ Html.h1 "Fable Universal Express Demo" ] |} 
+            Html.div [
+                prop.className "content" |> ignore
+                yield props.content
             ]
         ]
     ])
@@ -89,12 +89,13 @@ let universalApp (app: ExpressApp) =
     app.post("/test_post", fun req res _ ->
         let body = req.body
         let test: string option = req.``body``?test
-        match verifyPost test with
-        | Ok(value) ->
-            res.renderComponent(Html.p ("Value: " + value)) |> ignore
-        | Error(msg) ->
-            res.status 400 |> ignore
-            res.renderComponent(Html.p msg) |> ignore
+        let component' = match verifyPost test with
+                            | Ok(value) ->
+                                Html.p ("Value: " + value)
+                            | Error(msg) ->
+                                res.status 400 |> ignore
+                                Html.p msg
+        res.renderComponent(component') |> ignore
     )
 
     app.``use`` (fun (req: ExpressReq) (res: ExpressRes) next ->

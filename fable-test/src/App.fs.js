@@ -2,8 +2,8 @@ import { useReact_useContext_37FA55CF, useFeliz_React__React_useState_Static_150
 import { createElement } from "react";
 import React from "react";
 import * as react from "react";
-import { singleton, append, delay, toList } from "../fable_modules/fable-library.4.5.0/Seq.js";
-import { ofArray, singleton as singleton_1 } from "../fable_modules/fable-library.4.5.0/List.js";
+import { ofArray, singleton } from "../fable_modules/fable-library.4.5.0/List.js";
+import { singleton as singleton_1, delay, toList } from "../fable_modules/fable-library.4.5.0/Seq.js";
 import { Interop_reactApi } from "../fable_modules/Feliz.2.7.0/./Interop.fs.js";
 import { FSharpResult$2 } from "../fable_modules/fable-library.4.5.0/Choice.js";
 import { isException } from "../fable_modules/fable-library.4.5.0/Types.js";
@@ -11,20 +11,18 @@ import { isException } from "../fable_modules/fable-library.4.5.0/Types.js";
 export const requestContext = React_createContext_Z10F951C2("Request");
 
 export function AppLayout(props) {
-    let xs, children_2;
-    return React_contextProvider_34D9BBBD(requestContext, props.req, (xs = [(children_2 = toList(delay(() => {
-        ["className", "body"];
-        return append(singleton(props.req.Link({
-            children: singleton_1(createElement("h1", {
-                children: ["Fable Universal Express Demo"],
-            })),
-            href: "/",
-        })), delay(() => singleton(createElement("div", {
-            children: Interop_reactApi.Children.toArray([props.content]),
-        }))));
+    let xs_1, xs, children;
+    return React_contextProvider_34D9BBBD(requestContext, props.req, (xs_1 = [(xs = [props.req.Link({
+        children: singleton(createElement("h1", {
+            children: ["Fable Universal Express Demo"],
+        })),
+        href: "/",
+    }), (children = toList(delay(() => {
+        ["className", "content"];
+        return singleton_1(props.content);
     })), createElement("div", {
-        children: Interop_reactApi.Children.toArray(Array.from(children_2)),
-    }))], react.createElement(react.Fragment, {}, ...xs)));
+        children: Interop_reactApi.Children.toArray(Array.from(children)),
+    }))], react.createElement(react.Fragment, {}, ...xs))], react.createElement(react.Fragment, {}, ...xs_1)));
 }
 
 export function Counter() {
@@ -113,24 +111,26 @@ export function universalApp(app) {
     app.post("/test_post", (req_3, res_3, _arg_3) => {
         const body = req_3.body;
         const test = req_3.body.test;
+        let component$0027;
         const matchValue = verifyPost(test);
         if (matchValue.tag === 1) {
             const msg = matchValue.fields[0];
             res_3.status(400);
-            const value_7 = res_3.renderComponent(createElement("p", {
+            component$0027 = createElement("p", {
                 children: [msg],
-            }));
+            });
         }
         else {
             const value_2 = matchValue.fields[0];
-            const value_4 = res_3.renderComponent(createElement("p", {
+            component$0027 = createElement("p", {
                 children: ["Value: " + value_2],
-            }));
+            });
         }
+        const value_6 = res_3.renderComponent(component$0027);
     });
     app.use((req_4, res_4, next) => {
         res_4.status(404);
-        const value_10 = res_4.renderComponent(createElement("p", {
+        const value_9 = res_4.renderComponent(createElement("p", {
             children: ["Page not found"],
         }));
     });
