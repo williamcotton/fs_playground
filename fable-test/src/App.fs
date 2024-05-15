@@ -89,12 +89,13 @@ let universalApp (app: ExpressApp) =
     app.post("/test_post", fun req res _ ->
         let body = req.body
         let test: string option = req.``body``?test
-        let component' = match verifyPost test with
-                            | Ok(value) ->
-                                Html.p ("Value: " + value)
-                            | Error(msg) ->
-                                res.status 400 |> ignore
-                                Html.p msg
+        let component' = 
+            match verifyPost test with
+            | Ok(value) ->
+                Html.p ("Value: " + value)
+            | Error(msg) ->
+                res.status 400 |> ignore
+                Html.p msg
         res.renderComponent(component') |> ignore
     )
 
